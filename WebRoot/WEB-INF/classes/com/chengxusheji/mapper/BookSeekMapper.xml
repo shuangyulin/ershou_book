@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BookSeekMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加求购记录 -->
+	<insert id="addBookSeek" parameterType="bookSeek">
+		insert into t_bookSeek(bookPhoto,bookName,bookClassObj,publish,author,price,xjcd,seekDesc,userObj,addTime) values 
+		(#{bookPhoto},#{bookName},#{bookClassObj.bookClassId},#{publish},#{author},#{price},#{xjcd},#{seekDesc},#{userObj.user_name},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询求购记录 -->
+	<select id="queryBookSeek" resultMap="bookSeekMap" >
+		select t_bookSeek.* from t_bookSeek,t_bookClass,t_userInfo ${where} and t_bookSeek.bookClassObj = t_bookClass.bookClassId and t_bookSeek.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="bookSeekMap" type="bookSeek">
+        <id property="seekId" column="seekId" />
+        <association property="bookClassObj" column="bookClassObj" select="com.chengxusheji.mapper.BookClassMapper.getBookClass" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有求购记录 -->
+	<select id="queryBookSeekList" resultMap="bookSeekMap" >
+		select t_bookSeek.* from t_bookSeek,t_bookClass,t_userInfo ${where} and t_bookSeek.bookClassObj = t_bookClass.bookClassId and t_bookSeek.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的求购记录数 -->
+	<select id="queryBookSeekCount" resultType="int">
+		select count(*) from t_bookSeek,t_bookClass,t_userInfo ${where} and t_bookSeek.bookClassObj = t_bookClass.bookClassId and t_bookSeek.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个求购记录 -->
+	<select id="getBookSeek" parameterType="int" resultMap="bookSeekMap">
+		select * from t_bookSeek where t_bookSeek.seekId = #{seekId}
+	</select>
+
+	<!-- 更新求购记录 -->
+	<update id="updateBookSeek" parameterType="bookSeek">
+		update t_bookSeek set bookPhoto=#{bookPhoto},bookName=#{bookName},bookClassObj=#{bookClassObj.bookClassId},publish=#{publish},author=#{author},price=#{price},xjcd=#{xjcd},seekDesc=#{seekDesc},userObj=#{userObj.user_name},addTime=#{addTime} where seekId = #{seekId}
+	</update>
+
+	<!-- 删除求购记录 -->
+	<delete id="deleteBookSeek" parameterType="int">
+		delete from t_bookSeek where seekId=#{seekId}
+	</delete>
+
+</mapper>

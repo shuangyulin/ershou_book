@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BookClassMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加图书类别记录 -->
+	<insert id="addBookClass" parameterType="bookClass">
+		insert into t_bookClass(bookClassName) values 
+		(#{bookClassName})
+	</insert>
+
+	<!-- 按照查询条件分页查询图书类别记录 -->
+	<select id="queryBookClass" resultMap="bookClassMap" >
+		select t_bookClass.* from t_bookClass ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="bookClassMap" type="bookClass">
+        <id property="bookClassId" column="bookClassId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有图书类别记录 -->
+	<select id="queryBookClassList" resultMap="bookClassMap" >
+		select t_bookClass.* from t_bookClass ${where}
+	</select>
+
+    <!-- 按照查询条件的图书类别记录数 -->
+	<select id="queryBookClassCount" resultType="int">
+		select count(*) from t_bookClass ${where}
+	</select>
+
+	<!-- 根据主键查询某个图书类别记录 -->
+	<select id="getBookClass" parameterType="int" resultMap="bookClassMap">
+		select * from t_bookClass where t_bookClass.bookClassId = #{bookClassId}
+	</select>
+
+	<!-- 更新图书类别记录 -->
+	<update id="updateBookClass" parameterType="bookClass">
+		update t_bookClass set bookClassName=#{bookClassName} where bookClassId = #{bookClassId}
+	</update>
+
+	<!-- 删除图书类别记录 -->
+	<delete id="deleteBookClass" parameterType="int">
+		delete from t_bookClass where bookClassId=#{bookClassId}
+	</delete>
+
+</mapper>

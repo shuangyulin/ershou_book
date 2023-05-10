@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BookSellMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加图书出售记录 -->
+	<insert id="addBookSell" parameterType="bookSell">
+		insert into t_bookSell(bookPhoto,bookName,bookClassObj,publish,author,sellPrice,xjcd,sellDesc,userObj,addTime) values 
+		(#{bookPhoto},#{bookName},#{bookClassObj.bookClassId},#{publish},#{author},#{sellPrice},#{xjcd},#{sellDesc},#{userObj.user_name},#{addTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询图书出售记录 -->
+	<select id="queryBookSell" resultMap="bookSellMap" >
+		select t_bookSell.* from t_bookSell,t_bookClass,t_userInfo ${where} and t_bookSell.bookClassObj = t_bookClass.bookClassId and t_bookSell.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="bookSellMap" type="bookSell">
+        <id property="sellId" column="sellId" />
+        <association property="bookClassObj" column="bookClassObj" select="com.chengxusheji.mapper.BookClassMapper.getBookClass" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有图书出售记录 -->
+	<select id="queryBookSellList" resultMap="bookSellMap" >
+		select t_bookSell.* from t_bookSell,t_bookClass,t_userInfo ${where} and t_bookSell.bookClassObj = t_bookClass.bookClassId and t_bookSell.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的图书出售记录数 -->
+	<select id="queryBookSellCount" resultType="int">
+		select count(*) from t_bookSell,t_bookClass,t_userInfo ${where} and t_bookSell.bookClassObj = t_bookClass.bookClassId and t_bookSell.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个图书出售记录 -->
+	<select id="getBookSell" parameterType="int" resultMap="bookSellMap">
+		select * from t_bookSell where t_bookSell.sellId = #{sellId}
+	</select>
+
+	<!-- 更新图书出售记录 -->
+	<update id="updateBookSell" parameterType="bookSell">
+		update t_bookSell set bookPhoto=#{bookPhoto},bookName=#{bookName},bookClassObj=#{bookClassObj.bookClassId},publish=#{publish},author=#{author},sellPrice=#{sellPrice},xjcd=#{xjcd},sellDesc=#{sellDesc},userObj=#{userObj.user_name},addTime=#{addTime} where sellId = #{sellId}
+	</update>
+
+	<!-- 删除图书出售记录 -->
+	<delete id="deleteBookSell" parameterType="int">
+		delete from t_bookSell where sellId=#{sellId}
+	</delete>
+
+</mapper>
